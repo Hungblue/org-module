@@ -1,6 +1,6 @@
 <?php
 
-namespace Keyhoang\OrgModule\Events;
+namespace KeyHoang\OrgModule\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;

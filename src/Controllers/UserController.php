@@ -1,12 +1,12 @@
 <?php
 
-namespace Keyhoang\OrgModule\Controllers;
+namespace KeyHoang\OrgModule\Controllers;
 
 use App\Base\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Keyhoang\OrgModule\Models\User;
-use src\Services\UserService;
+use KeyHoang\OrgModule\Models\User;
+use KeyHoang\OrgModule\Services\UserService;
 
 class UserController extends Controller
 {

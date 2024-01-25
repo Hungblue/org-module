@@ -1,11 +1,11 @@
 <?php
 
-namespace Keyhoang\OrgModule\Listeners;
+namespace KeyHoang\OrgModule\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
-use Keyhoang\OrgModule\Events\SyncUserEvent;
-use src\Services\UserService;
+use KeyHoang\OrgModule\Events\SyncUserEvent;
+use KeyHoang\OrgModule\Services\UserService;
 use Throwable;
 
 class SyncUserListener implements ShouldQueue

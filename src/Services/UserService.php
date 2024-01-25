@@ -1,12 +1,12 @@
 <?php
 
-namespace src\Services;
+namespace KeyHoang\OrgModule\Services;
 
 use YaangVu\LaravelBase\Base\BaseService;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
-use Keyhoang\OrgModule\Models\User;
+use KeyHoang\OrgModule\Models\User;
 
 /**
  * @Author      hungnv1

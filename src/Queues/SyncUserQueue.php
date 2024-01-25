@@ -1,11 +1,11 @@
 <?php
 
-namespace src\Queues;
+namespace KeyHoang\OrgModule\Queues;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\Jobs\Job;
 use Illuminate\Support\Facades\Log;
-use src\Services\UserService;
+use KeyHoang\OrgModule\Services\UserService;
 
 class SyncUserQueue implements ShouldQueue
 {
