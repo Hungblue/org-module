@@ -6,7 +6,7 @@ use YaangVu\LaravelBase\Base\BaseService;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
-use src\Models\User;
+use Keyhoang\OrgModule\Models\User;
 
 /**
  * @Author      hungnv1

@@ -1,6 +1,6 @@
 <?php
 
-namespace src\Console;
+namespace Keyhoang\OrgModule\Console;
 
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -10,7 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use src\Events\SyncUserEvent;
+use Keyhoang\OrgModule\Events\SyncUserEvent;
 
 class SyncUserCommand extends Command
 {

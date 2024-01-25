@@ -1,10 +1,10 @@
 <?php
 
-namespace src\Listeners;
+namespace Keyhoang\OrgModule\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
-use src\Events\SyncUserEvent;
+use Keyhoang\OrgModule\Events\SyncUserEvent;
 use src\Services\UserService;
 use Throwable;
 

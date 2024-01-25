@@ -1,6 +1,6 @@
 <?php
 
-namespace src\Models;
+namespace Keyhoang\OrgModule\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
