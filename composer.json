@@ -1,0 +1,37 @@
+{
+  "name": "keyhoang/org-module" ,
+  "description": "Module for synchronized users",
+  "keywords": [
+    "laravel",
+    "lumen",
+    "env",
+    "toprate",
+    "consul"
+  ],
+  "license": "MIT",
+  "require": {
+    "php": "^8.1",
+    "ext-curl": "*",
+    "yaangvu/laravel-base": "^4.0",
+    "laravel/framework": "^9",
+    "guzzlehttp/guzzle": "^7.2"
+  },
+  "require-dev": {
+    "illuminate/database": "^7|^8|^9|^10",
+    "illuminate/pagination": "^7|^8|^9|^10",
+    "illuminate/http": "^7|^8|^9|^10",
+    "illuminate/console": "^7|^8|^9|^10"
+  },
+  "authors": [
+    {
+      "name": "Hoang Ky",
+      "email": "hoangky@toprate.io"
+    }
+  ],
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+      "KeyHoang\\OrgModule\\": "src/"
+    }
+  }
+}
