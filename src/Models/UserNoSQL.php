@@ -3,18 +3,18 @@
 namespace KeyHoang\OrgModule\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use MongoDB\Laravel\Eloquent\Model;
+use MongoDB\Laravel\Eloquent\SoftDeletes;
 
-class User extends Authenticatable
+class UserNoSQL extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasFactory, SoftDeletes;
 
-    protected $table = 'users';
+    protected $connection = 'mongodb';
+    protected $collection = 'users';
+    protected $primaryKey = '_id';
     protected $fillable
-                     = [
+                          = [
             'sso_id',
             'username',
             'full_name',
@@ -27,3 +27,5 @@ class User extends Authenticatable
             'department'
         ];
 }
+
+

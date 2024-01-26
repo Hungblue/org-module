@@ -1,6 +1,6 @@
 <?php
 
-namespace KeyHoang\OrgModule\Console;
+namespace KeyHoang\OrgModule\Console\Commands;
 
 use Exception;
 use Illuminate\Bus\Queueable;
