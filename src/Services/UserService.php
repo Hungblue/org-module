@@ -2,11 +2,12 @@
 
 namespace KeyHoang\OrgModule\Services;
 
-use YaangVu\LaravelBase\Base\BaseService;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use KeyHoang\OrgModule\Models\User;
+use KeyHoang\OrgModule\Models\UserNoSQL;
+use YaangVu\LaravelBase\Base\BaseService;
 
 /**
  * @Author      hungnv1
@@ -14,23 +15,26 @@ use KeyHoang\OrgModule\Models\User;
  */
 class UserService extends BaseService
 {
-    public function __construct(private readonly Model $model = new User(), private readonly ?string $alias = null)
+    public function __construct(private Model $model = new User(), private readonly ?string $alias = null)
     {
+        if (config('database.default') == 'mongodb') {
+            $this->model = new UserNoSQL();
+        }
         parent::__construct($this->model, $this->alias);
     }
 
     public function sync($user): bool
     {
         if ($user?->deleted_at ?? false) {
-            User::query()->where('sso_id', '=', $user->sso_id)->delete();
+            $this->model->query()->where('sso_id', '=', $user->sso_id)->delete();
             Log::info("Delete user sso_id: " . $user->sso_id . "  Success");
 
             return true;
         }
 
-        $userModel = User::query()->where('sso_id', '=', $user->sso_id)->first();
+        $userModel = $this->model->query()->where('sso_id', '=', $user->sso_id)->first();
         if (!$userModel) {
-            $userModel = new User();
+            $userModel = $this->model;
         }
 
         $userModel->sso_id       = $user->sso_id;
@@ -39,6 +43,7 @@ class UserService extends BaseService
         $userModel->email        = $user->email;
         $userModel->phone_number = $user->phone_number;
         $userModel->staff_code   = $user->staff_code;
+        $userModel->position     = $user->position;
 
         try {
             $userModel->save();
