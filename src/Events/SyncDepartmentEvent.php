@@ -5,7 +5,7 @@ namespace KeyHoang\OrgModule\Events;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class SyncUserEvent
+class SyncDepartmentEvent
 {
     use SerializesModels, Dispatchable;
 
