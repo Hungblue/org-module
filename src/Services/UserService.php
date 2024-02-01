@@ -53,8 +53,9 @@ class UserService extends BaseService
             $userModel->department_code = $department->code ?? '';
             $userModel->unit            = '';
             if ($department->unit) {
-                $unit            = is_array($department->unit) ? (object)$department->unit : $department->unit;
-                $userModel->unit = $unit->name;
+                $unit                 = is_array($department->unit) ? (object)$department->unit : $department->unit;
+                $userModel->unit      = $unit->name;
+                $userModel->unit_code = $unit->code;
             }
         }
 
