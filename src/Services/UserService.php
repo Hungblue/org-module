@@ -44,14 +44,15 @@ class UserService extends BaseService
         $userModel->phone_number = $user->phone_number;
         $userModel->staff_code   = $user->staff_code;
         $userModel->position     = $user->position;
+        $userModel->avatar       = $user->avatar;
         if ($user->user_department) {
             $userDepartment             = is_array($user->user_department) ? (object)$user->user_department
                 : $user->user_department;
             $department                 = is_array($userDepartment->department) ? (object)$userDepartment->department
                 : $userDepartment->department;
-            $userModel->department      = $department->name ?? '';
-            $userModel->department_code = $department->code ?? '';
-            $userModel->unit            = '';
+            $userModel->department      = $department->name ?? null;
+            $userModel->department_code = $department->code ?? null;
+            $userModel->unit            = null;
             if ($department->unit) {
                 $unit                 = is_array($department->unit) ? (object)$department->unit : $department->unit;
                 $userModel->unit      = $unit->name;
