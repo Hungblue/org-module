@@ -46,13 +46,17 @@ class UserService extends BaseService
         $userModel->position     = $user->position;
         $userModel->avatar       = $user->avatar;
         if ($user->user_department) {
-            $userDepartment             = is_array($user->user_department) ? (object)$user->user_department
+            $userDepartment = is_array($user->user_department) ? (object)$user->user_department
                 : $user->user_department;
-            $department                 = is_array($userDepartment->department) ? (object)$userDepartment->department
+            $department     = is_array($userDepartment->department) ? (object)$userDepartment->department
                 : $userDepartment->department;
-            $userModel->department      = $department->name ?? null;
-            $userModel->department_code = $department->code ?? null;
-            $userModel->unit            = null;
+            #Set khoi/ban/phong
+            if ($department->department) {
+                $userModel->department      = $department->department->name ?? null;
+                $userModel->department_code = $department->department->code ?? null;
+            }
+            #Set unit
+            $userModel->unit = null;
             if ($department->unit) {
                 $unit                 = is_array($department->unit) ? (object)$department->unit : $department->unit;
                 $userModel->unit      = $unit->name;
