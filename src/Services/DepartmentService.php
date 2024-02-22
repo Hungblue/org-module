@@ -43,11 +43,11 @@ class DepartmentService extends BaseService
             $departmentModel = $this->model;
         }
 
-        $departmentModel->code    = $department->code;
-        $departmentModel->name    = $department->name;
-        $departmentModel->level   = $department->level;
-        $departmentModel->is_unit = $department->is_unit;
-        $departmentModel->unit_id = $department->unit_id;
+        $departmentModel->code          = $department->code;
+        $departmentModel->name          = $department->name;
+        $departmentModel->level         = $department->level;
+        $departmentModel->is_unit       = $department->is_unit;
+        $departmentModel->is_department = $department->is_department;
 
         if ($department->parent) {
             $parent = $this->model->query()->where('code', '=', $department->parent->code)
