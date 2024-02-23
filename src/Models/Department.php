@@ -20,6 +20,9 @@ class Department extends Model
             'assistant_id',
             'parent_id',
             'is_unit',
-            'unit_id'
+            'unit_id',
+            'is_department',
+            'department_id',
+            'is_group'
         ];
 }

@@ -13,19 +13,7 @@ class UserNoSQL extends Model
     protected $connection = 'mongodb';
     protected $collection = 'users';
     protected $primaryKey = '_id';
-    protected $fillable
-                          = [
-            'sso_id',
-            'username',
-            'full_name',
-            'email',
-            'user_status',
-            'phone_number',
-            'staff_code',
-            'position',
-            'unit',
-            'department'
-        ];
+    protected $fillable   = ['*'];
 }
 
 
