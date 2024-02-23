@@ -18,14 +18,15 @@ use YaangVu\LaravelBase\Base\BaseService;
 class DepartmentService extends BaseService
 {
     protected Model $userModel;
+    private string  $mongodb   = 'mongodb';
+    private bool    $isMongodb = false;
 
     public function __construct(private Model $model = new Department(), private readonly ?string $alias = null)
     {
-        $this->userModel = new User();
-        if (config('database.default') == 'mongodb') {
-            $this->model     = new DepartmentNoSQL();
-            $this->userModel = new UserNoSQL();
-        }
+        $this->isMongodb = (config('database.default') == $this->mongodb);
+
+        $this->model     = $this->isMongodb ? new DepartmentNoSQL() : new Department();
+        $this->userModel = $this->isMongodb ? new UserNoSQL() : new User();
         parent::__construct($this->model, $this->alias);
     }
 
@@ -53,30 +54,20 @@ class DepartmentService extends BaseService
             $parent = $this->model->query()->where('code', '=', $department->parent->code)
                                   ->first();
 
-            if (config('database.default') == 'mongodb') {
-                $departmentModel->parent_id = $parent?->_id;
-            }
-            else {
-                $departmentModel->parent_id = $parent?->id;
-            }
+            $departmentModel->parent_id = $this->isMongodb ? $parent?->_id : $parent?->id;
         }
 
         if ($department->department_head) {
-            $departmentHead = $this->userModel->query()
-                                              ->where('sso_id', '=',
-                                                      $department->department_head->sso_id)
-                                              ->first();
-            if (config('database.default') == 'mongodb') {
-                $departmentModel->department_head_id = $departmentHead?->_id;
-            }
-            else {
-                $departmentModel->department_head_id = $departmentHead?->id;
-            }
+            $departmentHead                      = $this->userModel->query()
+                                                                   ->where('sso_id', '=',
+                                                                           $department->department_head->sso_id)
+                                                                   ->first();
+            $departmentModel->department_head_id = $this->isMongodb ? $departmentHead?->_id : $departmentHead?->id;
         }
 
         try {
             $departmentModel->save();
-            Log::info("Update department code: " . $department->code . "  Success");
+            Log::info("Sync department code: " . $department->code . "  Success");
         } catch (Exception $e) {
             Log::info("Sync Fail : " . $e->getMessage());
         }

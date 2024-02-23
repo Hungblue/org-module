@@ -15,11 +15,13 @@ use YaangVu\LaravelBase\Base\BaseService;
  */
 class UserService extends BaseService
 {
+    private string $mongodb   = 'mongodb';
+    private bool   $isMongodb = false;
+
     public function __construct(private Model $model = new User(), private readonly ?string $alias = null)
     {
-        if (config('database.default') == 'mongodb') {
-            $this->model = new UserNoSQL();
-        }
+        $this->isMongodb = (config('database.default') == $this->mongodb);
+        $this->model     = $this->isMongodb ? new UserNoSQL() : new User();
         parent::__construct($this->model, $this->alias);
     }
 
@@ -34,7 +36,7 @@ class UserService extends BaseService
 
         $userModel = $this->model->query()->where('sso_id', '=', $user->sso_id)->first();
         if (!$userModel) {
-            $userModel = $this->model;
+            $userModel = $this->isMongodb ? new UserNoSQL() : new User();
         }
 
         $userModel->sso_id       = $user->sso_id;
@@ -66,7 +68,7 @@ class UserService extends BaseService
 
         try {
             $userModel->save();
-            Log::info("Update user sso_id: " . $user->sso_id . "  Success");
+            Log::info("Sync user sso_id: " . $user->sso_id . "  Success");
         } catch (Exception $e) {
             Log::info("Sync Fail : " . $e->getMessage());
         }

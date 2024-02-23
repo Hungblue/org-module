@@ -23,7 +23,10 @@ class User extends Authenticatable
             'phone_number',
             'staff_code',
             'position',
+            'avatar',
             'unit',
-            'department'
+            'unit_code',
+            'department',
+            'department_code'
         ];
 }
