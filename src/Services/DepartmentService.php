@@ -41,7 +41,7 @@ class DepartmentService extends BaseService
 
         $departmentModel = $this->model->query()->where('code', '=', $department->code)->first();
         if (!$departmentModel) {
-            $departmentModel = $this->model;
+            $departmentModel = $this->isMongodb ? new DepartmentNoSQL() : new Department();
         }
 
         $departmentModel->code          = $department->code;
