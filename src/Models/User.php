@@ -24,6 +24,7 @@ class User extends Authenticatable
             'staff_code',
             'position',
             'avatar',
+            'status',
             'unit',
             'unit_code',
             'department',
