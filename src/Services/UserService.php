@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use KeyHoang\OrgModule\Models\User;
 use KeyHoang\OrgModule\Models\UserNoSQL;
+use KeyHoang\OrgModule\Traits\RabbitMQProducer;
+use PhpAmqpLib\Exchange\AMQPExchangeType;
 use YaangVu\LaravelBase\Base\BaseService;
 
 /**
@@ -15,6 +17,8 @@ use YaangVu\LaravelBase\Base\BaseService;
  */
 class UserService extends BaseService
 {
+    use RabbitMQProducer;
+
     private string $mongodb   = 'mongodb';
     private bool   $isMongodb = false;
 
@@ -71,11 +75,23 @@ class UserService extends BaseService
 
         try {
             $userModel->save();
+            if (config('organization.set_role')) {
+                $this->setDefaultRole($userModel);
+            }
             Log::info("Sync user sso_id: " . $user->sso_id . "  Success");
         } catch (Exception $e) {
             Log::info("Sync Fail : " . $e->getMessage());
         }
 
         return true;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function setDefaultRole($user): void
+    {
+        $this->setVhost(config('rabbitmq.vhost'))
+             ->pushToExchange($user, 'SET-ROLE', AMQPExchangeType::DIRECT, 'set-role');
     }
 }
