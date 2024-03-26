@@ -54,7 +54,8 @@ class UserService extends BaseService
         $userModel->position     = $user->position;
         $userModel->avatar       = $user->avatar;
         if ($user->user_status) {
-            $userModel->status = $user->user_status->name;
+            $userStatus        = (object)$user->user_status;
+            $userModel->status = $userStatus->name;
         }
         if ($user->user_department) {
             $userDepartment = is_array($user->user_department) ? (object)$user->user_department
