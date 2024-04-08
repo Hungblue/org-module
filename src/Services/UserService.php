@@ -5,6 +5,7 @@ namespace KeyHoang\OrgModule\Services;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
+use KeyHoang\OrgModule\Models\DepartmentNoSQL;
 use KeyHoang\OrgModule\Models\User;
 use KeyHoang\OrgModule\Models\UserNoSQL;
 use KeyHoang\OrgModule\Traits\RabbitMQProducer;
@@ -57,23 +58,22 @@ class UserService extends BaseService
             $userStatus        = (object)$user->user_status;
             $userModel->status = $userStatus->name;
         }
-        if ($user->user_department) {
-            $userDepartment = is_array($user->user_department) ? (object)$user->user_department
-                : $user->user_department;
-            $department     = is_array($userDepartment->department) ? (object)$userDepartment->department
-                : $userDepartment->department;
-            #Set khoi/ban/phong
-            if ($department->department) {
-                $userModel->department      = $department->department->name ?? null;
-                $userModel->department_code = $department->department->code ?? null;
+
+        $department = is_array($user->department) ? (object)$user->department : $user->department;
+        #Set khoi/ban/phong
+        if ($department) {
+            $userModel->department      = $department->name ?? null;
+            $userModel->department_code = $department->code ?? null;
+        }
+        #Set unit
+        $unit = is_array($user->unit) ? (object)$user->unit : $user->unit;
+        if ($unit) {
+            if ($this->isMongodb) {
+                $unitMongoDb        = DepartmentNoSQL::query()->where('code', '=', $unit->code)->first();
+                $userModel->unit_id = $unitMongoDb->_id;
             }
-            #Set unit
-            $userModel->unit = null;
-            if ($department->unit) {
-                $unit                 = is_array($department->unit) ? (object)$department->unit : $department->unit;
-                $userModel->unit      = $unit->name;
-                $userModel->unit_code = $unit->code;
-            }
+            $userModel->unit      = $unit->name;
+            $userModel->unit_code = $unit->code;
         }
 
         try {
