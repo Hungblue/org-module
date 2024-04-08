@@ -40,7 +40,10 @@ class UserService extends BaseService
         }
 
         $isNewUser = false;
-        $userModel = $this->model->query()->where('sso_id', '=', $user->sso_id)->first();
+        $userModel = $this->model->query()
+                                 ->where('sso_id', '=', $user->sso_id)
+                                 ->withTrashed()
+                                 ->first();
         if (!$userModel) {
             $userModel = $this->isMongodb ? new UserNoSQL() : new User();
             $isNewUser = true;
