@@ -50,7 +50,7 @@ class UserService extends BaseService
         $userModel->username     = $user->username;
         $userModel->full_name    = $user->full_name;
         $userModel->email        = $user->email;
-        $userModel->phone_number = $user->phone_number;
+        $userModel->phone_number = $user->phone_number_1;
         $userModel->staff_code   = $user->staff_code;
         $userModel->position     = $user->position;
         $userModel->avatar       = $user->avatar;
