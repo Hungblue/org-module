@@ -79,6 +79,10 @@ class UserService extends BaseService
             $userModel->unit_code = $unit->code;
         }
 
+        if ($this->isMongodb && $isNewUser) {
+            $userModel->is_active = true;
+        }
+
         try {
             $userModel->save();
             if (config('organization.set_role') && $isNewUser) {
