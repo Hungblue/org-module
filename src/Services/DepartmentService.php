@@ -33,25 +33,31 @@ class DepartmentService extends BaseService
     public function sync($department): bool
     {
         if ($department?->deleted_at ?? false) {
-            $this->model->query()->where('code', '=', $department->code)->delete();
-            Log::info("Delete department code: " . $department->code . "  Success");
+            $this->model->query()->where('organization_id', '=', $department->id)->delete();
+            Log::info("Delete department organization_id: " . $department->id . "  Success");
 
             return true;
         }
 
-        $departmentModel = $this->model->query()->where('code', '=', $department->code)->first();
+        $departmentModel = $this->model->query()
+                                       ->where('organization_id', '=', $department->id)
+                                       ->first();
+        $isCreateNew     = false;
         if (!$departmentModel) {
             $departmentModel = $this->isMongodb ? new DepartmentNoSQL() : new Department();
+            $isCreateNew     = true;
         }
 
-        $departmentModel->code          = $department->code;
-        $departmentModel->name          = $department->name;
-        $departmentModel->level         = $department->level;
-        $departmentModel->is_unit       = $department->is_unit;
-        $departmentModel->is_department = $department->is_department;
+        $departmentModel->organization_id = $department->id;
+        $departmentModel->code            = $department->code;
+        $departmentModel->name            = $department->name;
+        $departmentModel->level           = $department->level;
+        $departmentModel->is_unit         = $department->is_unit;
+        $departmentModel->is_department   = $department->is_department;
 
         if ($department->parent) {
-            $parent = $this->model->query()->where('code', '=', $department->parent->code)
+            $parent = $this->model->query()
+                                  ->where('organization_id', '=', $department->parent->id)
                                   ->first();
 
             $departmentModel->parent_id = $this->isMongodb ? $parent?->_id : $parent?->id;
@@ -67,11 +73,21 @@ class DepartmentService extends BaseService
 
         try {
             $departmentModel->save();
-            Log::info("Sync department code: " . $department->code . "  Success");
+            $this->postSync($departmentModel, $isCreateNew);
+            Log::info("Sync department organization_id: " . $department->id . "  Success");
         } catch (Exception $e) {
             Log::info("Sync Fail : " . $e->getMessage());
         }
 
         return true;
+    }
+
+    public function postSync($department, $isCreateNew): void
+    {
+        $departmentServiceClass = config('organization.department_service_class');
+        if ($departmentServiceClass) {
+            $class = app()->make($departmentServiceClass);
+            $class->postSync($department, $isCreateNew);
+        }
     }
 }

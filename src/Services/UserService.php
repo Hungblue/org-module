@@ -9,7 +9,6 @@ use KeyHoang\OrgModule\Models\DepartmentNoSQL;
 use KeyHoang\OrgModule\Models\User;
 use KeyHoang\OrgModule\Models\UserNoSQL;
 use KeyHoang\OrgModule\Traits\RabbitMQProducer;
-use PhpAmqpLib\Exchange\AMQPExchangeType;
 use YaangVu\LaravelBase\Base\BaseService;
 
 /**
@@ -39,14 +38,14 @@ class UserService extends BaseService
             return true;
         }
 
-        $isNewUser = false;
-        $userModel = $this->model->query()
-                                 ->where('sso_id', '=', $user->sso_id)
-                                 ->withTrashed()
-                                 ->first();
+        $isCreateNew = false;
+        $userModel   = $this->model->query()
+                                   ->where('sso_id', '=', $user->sso_id)
+                                   ->withTrashed()
+                                   ->first();
         if (!$userModel) {
-            $userModel = $this->isMongodb ? new UserNoSQL() : new User();
-            $isNewUser = true;
+            $userModel   = $this->isMongodb ? new UserNoSQL() : new User();
+            $isCreateNew = true;
         }
 
         $userModel->sso_id       = $user->sso_id;
@@ -79,15 +78,13 @@ class UserService extends BaseService
             $userModel->unit_code = $unit->code;
         }
 
-        if ($this->isMongodb && $isNewUser) {
+        if ($this->isMongodb && $isCreateNew) {
             $userModel->is_active = true;
         }
 
         try {
             $userModel->save();
-            if (config('organization.set_role') && $isNewUser) {
-                $this->setDefaultRole($userModel->toArray());
-            }
+            $this->postSync($userModel, $isCreateNew);
             Log::info("Sync user sso_id: " . $user->sso_id . "  Success");
         } catch (Exception $e) {
             Log::info("Sync Fail : " . $e->getMessage());
@@ -96,12 +93,12 @@ class UserService extends BaseService
         return true;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function setDefaultRole($user): void
+    public function postSync($user, $isCreateNew): void
     {
-        $this->setVhost(config('rabbitmq.vhost'))
-             ->pushToExchange($user, 'SET-ROLE', AMQPExchangeType::DIRECT, 'set-role');
+        $userServiceClass = config('organization.user_service_class');
+        if ($userServiceClass) {
+            $class = app()->make($userServiceClass);
+            $class->postSync($user, $isCreateNew);
+        }
     }
 }
