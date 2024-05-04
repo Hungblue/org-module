@@ -33,8 +33,8 @@ class DepartmentService extends BaseService
     public function sync($department): bool
     {
         if ($department?->deleted_at ?? false) {
-            $this->model->query()->where('code', '=', $department->code)->delete();
-            Log::info("Delete department code: " . $department->code . "  Success");
+            $this->model->query()->where('organization_id', '=', $department->id)->delete();
+            Log::info("Delete department organization_id: " . $department->id . "  Success");
 
             return true;
         }
