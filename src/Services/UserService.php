@@ -64,8 +64,15 @@ class UserService extends BaseService
         $department = is_array($user->department) ? (object)$user->department : $user->department;
         #Set khoi/ban/phong
         if ($department) {
-            $userModel->department      = $department->name ?? null;
-            $userModel->department_code = $department->code ?? null;
+            if ($this->isMongodb) {
+                $departmentMongoDb        = DepartmentNoSQL::query()
+                                                           ->where('code', '=', $department->code)
+                                                           ->first();
+                $userModel->department_id = $departmentMongoDb->_id ?? null;
+            }
+            $userModel->department                  = $department->name ?? null;
+            $userModel->department_code             = $department->code ?? null;
+            $userModel->department_abbreviated_name = $department->abbreviated_name ?? null;
         }
         #Set unit
         $unit = is_array($user->unit) ? (object)$user->unit : $user->unit;
@@ -74,8 +81,9 @@ class UserService extends BaseService
                 $unitMongoDb        = DepartmentNoSQL::query()->where('code', '=', $unit->code)->first();
                 $userModel->unit_id = $unitMongoDb->_id;
             }
-            $userModel->unit      = $unit->name;
-            $userModel->unit_code = $unit->code;
+            $userModel->unit                  = $unit->name;
+            $userModel->unit_code             = $unit->code;
+            $userModel->unit_abbreviated_name = $department->abbreviated_name ?? null;
         }
 
         if ($this->isMongodb && $isCreateNew) {
