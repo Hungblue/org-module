@@ -83,7 +83,7 @@ class UserService extends BaseService
             }
             $userModel->unit                  = $unit->name;
             $userModel->unit_code             = $unit->code;
-            $userModel->unit_abbreviated_name = $department->abbreviated_name ?? null;
+            $userModel->unit_abbreviated_name = $unit->abbreviated_name ?? null;
         }
 
         if ($this->isMongodb && $isCreateNew) {
