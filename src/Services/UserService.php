@@ -92,7 +92,7 @@ class UserService extends BaseService
 
         try {
             $userModel->save();
-            $this->postSync($userModel, $isCreateNew);
+            $this->postSync($user, $userModel, $isCreateNew);
             Log::info("Sync user sso_id: " . $user->sso_id . "  Success");
         } catch (Exception $e) {
             Log::info("Sync Fail : " . $e->getMessage());
@@ -101,12 +101,12 @@ class UserService extends BaseService
         return true;
     }
 
-    public function postSync($user, $isCreateNew): void
+    public function postSync($userSync, $user, $isCreateNew): void
     {
         $userServiceClass = config('organization.user_service_class');
         if ($userServiceClass) {
             $class = app()->make($userServiceClass);
-            $class->postSync($user, $isCreateNew);
+            $class->postSync($userSync, $user, $isCreateNew);
         }
     }
 }
