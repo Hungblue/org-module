@@ -80,7 +80,7 @@ class CommandBase extends Command
                 }
 
                 if (count($lists)) {
-                    $event = app()->make($event, ['data' => $lists]);
+                    $event = new $event($lists);
                     event($event);
                 }
 
