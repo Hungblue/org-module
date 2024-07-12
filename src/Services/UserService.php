@@ -32,15 +32,15 @@ class UserService extends BaseService
     public function sync($user): bool
     {
         if ($user?->deleted_at ?? false) {
-            $this->model->query()->where('sso_id', '=', $user->sso_id)->delete();
-            Log::info("Delete user sso_id: " . $user->sso_id . "  Success");
+            $this->model->query()->where('uuid', '=', $user->uuid)->delete();
+            Log::info("Delete user uuid: " . $user->uuid . "  Success");
 
             return true;
         }
 
         $isCreateNew = false;
         $userModel   = $this->model->query()
-                                   ->where('sso_id', '=', $user->sso_id)
+                                   ->where('uuid', '=', $user->uuid)
                                    ->withTrashed()
                                    ->first();
         if (!$userModel) {
@@ -67,7 +67,7 @@ class UserService extends BaseService
         if ($department) {
             if ($this->isMongodb) {
                 $departmentMongoDb        = DepartmentNoSQL::query()
-                                                           ->where('code', '=', $department->code)
+                                                           ->where('uuid', '=', $department->uuid)
                                                            ->first();
                 $userModel->department_id = $departmentMongoDb->_id ?? null;
             }
@@ -79,7 +79,7 @@ class UserService extends BaseService
         $unit = is_array($user->unit) ? (object)$user->unit : $user->unit;
         if ($unit) {
             if ($this->isMongodb) {
-                $unitMongoDb        = DepartmentNoSQL::query()->where('code', '=', $unit->code)->first();
+                $unitMongoDb        = DepartmentNoSQL::query()->where('uuid', '=', $unit->uuid)->first();
                 $userModel->unit_id = $unitMongoDb->_id;
             }
             $userModel->unit                  = $unit->name;
@@ -94,7 +94,7 @@ class UserService extends BaseService
         try {
             $userModel->save();
             $this->postSync($user, $userModel, $isCreateNew);
-            Log::info("Sync user sso_id: " . $user->sso_id . "  Success");
+            Log::info("Sync user uuid: " . $user->uuid . "  Success");
         } catch (Exception $e) {
             Log::info("Sync Fail : " . $e->getMessage());
         }

@@ -33,14 +33,14 @@ class DepartmentService extends BaseService
     public function sync($department): bool
     {
         if ($department?->deleted_at ?? false) {
-            $this->model->query()->where('organization_id', '=', $department->id)->delete();
-            Log::info("Delete department organization_id: " . $department->id . "  Success");
+            $this->model->query()->where('uuid', '=', $department->uuid)->delete();
+            Log::info("Delete department uuid: " . $department->uuid . "  Success");
 
             return true;
         }
 
         $departmentModel = $this->model->query()
-                                       ->where('organization_id', '=', $department->id)
+                                       ->where('uuid', '=', $department->uuid)
                                        ->first();
         $isCreateNew     = false;
         if (!$departmentModel) {
@@ -48,7 +48,7 @@ class DepartmentService extends BaseService
             $isCreateNew     = true;
         }
 
-        $departmentModel->organization_id  = $department->id;
+        $departmentModel->uuid             = $department->uuid;
         $departmentModel->code             = $department->code;
         $departmentModel->abbreviated_name = $department->abbreviated_name;
         $departmentModel->name             = $department->name;
@@ -58,7 +58,7 @@ class DepartmentService extends BaseService
 
         if ($department->parent) {
             $parent = $this->model->query()
-                                  ->where('organization_id', '=', $department->parent->id)
+                                  ->where('uuid', '=', $department->parent->uuid)
                                   ->first();
 
             $departmentModel->parent_id = $this->isMongodb ? $parent?->_id : $parent?->id;
@@ -75,7 +75,7 @@ class DepartmentService extends BaseService
         try {
             $departmentModel->save();
             $this->postSync($departmentModel, $isCreateNew);
-            Log::info("Sync department organization_id: " . $department->id . "  Success");
+            Log::info("Sync department uuid: " . $department->uuid . "  Success");
         } catch (Exception $e) {
             Log::info("Sync Fail : " . $e->getMessage());
         }
