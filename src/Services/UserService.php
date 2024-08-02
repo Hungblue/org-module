@@ -5,6 +5,7 @@ namespace KeyHoang\OrgModule\Services;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
+use KeyHoang\OrgModule\Models\Department;
 use KeyHoang\OrgModule\Models\DepartmentNoSQL;
 use KeyHoang\OrgModule\Models\User;
 use KeyHoang\OrgModule\Models\UserNoSQL;
@@ -19,13 +20,27 @@ class UserService extends BaseService
 {
     use RabbitMQProducer;
 
-    private string $mongodb   = 'mongodb';
-    private bool   $isMongodb = false;
+    private string      $mongodb         = 'mongodb';
+    private bool        $isMongodb       = false;
+    private string|null $userClass       = null;
+    private string|null $departmentClass = null;
 
     public function __construct(private Model $model = new User(), private readonly ?string $alias = null)
     {
         $this->isMongodb = (config('database.default') == $this->mongodb);
-        $this->model     = $this->isMongodb ? new UserNoSQL() : new User();
+        $userClass       = config('organization.user_model_class');
+        $departmentClass = config('organization.department_model_class');
+        if ($userClass && $departmentClass) {
+            $this->userClass       = $userClass;
+            $this->departmentClass = $departmentClass;
+        }
+        else {
+            $this->userClass       = $this->isMongodb ? UserNoSQL::class : User::class;
+            $this->departmentClass = $this->isMongodb ? DepartmentNoSQL::class : Department::class;
+        }
+
+        $this->model = new $this->userClass;
+
         parent::__construct($this->model, $this->alias);
     }
 
@@ -44,7 +59,7 @@ class UserService extends BaseService
                                    ->withTrashed()
                                    ->first();
         if (!$userModel) {
-            $userModel   = $this->isMongodb ? new UserNoSQL() : new User();
+            $userModel   = new $this->userClass;
             $isCreateNew = true;
         }
 
@@ -66,9 +81,8 @@ class UserService extends BaseService
         #Set khoi/ban/phong
         if ($department) {
             if ($this->isMongodb) {
-                $departmentMongoDb        = DepartmentNoSQL::query()
-                                                           ->where('uuid', '=', $department->uuid)
-                                                           ->first();
+                $departmentMongoDbModel   = new $this->departmentClass;
+                $departmentMongoDb        = $departmentMongoDbModel->where('uuid', '=', $department->uuid)->first();
                 $userModel->department_id = $departmentMongoDb->_id ?? null;
             }
             $userModel->department                  = $department->name ?? null;
@@ -79,7 +93,8 @@ class UserService extends BaseService
         $unit = is_array($user->unit) ? (object)$user->unit : $user->unit;
         if ($unit) {
             if ($this->isMongodb) {
-                $unitMongoDb        = DepartmentNoSQL::query()->where('uuid', '=', $unit->uuid)->first();
+                $unitMongoDbModel   = new $this->departmentClass;
+                $unitMongoDb        = $unitMongoDbModel->where('uuid', '=', $unit->uuid)->first();
                 $userModel->unit_id = $unitMongoDb->_id;
             }
             $userModel->unit                  = $unit->name;

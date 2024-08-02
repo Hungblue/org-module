@@ -27,7 +27,11 @@ class User extends Authenticatable
             'status',
             'unit',
             'unit_code',
+            'unit_abbreviated_name',
             'department',
-            'department_code'
+            'department_code',
+            'department_abbreviated_name',
+            'on_system',
+            'uuid',
         ];
 }

@@ -17,16 +17,30 @@ use YaangVu\LaravelBase\Base\BaseService;
  */
 class DepartmentService extends BaseService
 {
-    protected Model $userModel;
-    private string  $mongodb   = 'mongodb';
-    private bool    $isMongodb = false;
+    protected Model     $userModel;
+    private string      $mongodb         = 'mongodb';
+    private string|null $userClass       = null;
+    private string|null $departmentClass = null;
+    private bool        $isMongodb       = false;
 
     public function __construct(private Model $model = new Department(), private readonly ?string $alias = null)
     {
         $this->isMongodb = (config('database.default') == $this->mongodb);
 
-        $this->model     = $this->isMongodb ? new DepartmentNoSQL() : new Department();
-        $this->userModel = $this->isMongodb ? new UserNoSQL() : new User();
+        $userClass       = config('organization.user_model_class');
+        $departmentClass = config('organization.department_model_class');
+        if ($userClass && $departmentClass) {
+            $this->userClass       = $userClass;
+            $this->departmentClass = $departmentClass;
+        }
+        else {
+            $this->userClass       = $this->isMongodb ? UserNoSQL::class : User::class;
+            $this->departmentClass = $this->isMongodb ? DepartmentNoSQL::class : Department::class;
+        }
+
+        $this->model     = new $this->departmentClass;
+        $this->userModel = new $this->userClass;
+
         parent::__construct($this->model, $this->alias);
     }
 
@@ -44,7 +58,7 @@ class DepartmentService extends BaseService
                                        ->first();
         $isCreateNew     = false;
         if (!$departmentModel) {
-            $departmentModel = $this->isMongodb ? new DepartmentNoSQL() : new Department();
+            $departmentModel = new $this->departmentClass;
             $isCreateNew     = true;
         }
 

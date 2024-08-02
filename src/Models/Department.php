@@ -23,6 +23,8 @@ class Department extends Model
             'unit_id',
             'is_department',
             'department_id',
-            'is_group'
+            'is_group',
+            'abbreviated_name',
+            'uuid'
         ];
 }
