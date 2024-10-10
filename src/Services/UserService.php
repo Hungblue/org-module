@@ -41,6 +41,7 @@ class UserService extends BaseService
         $isCreateNew = false;
         $userModel   = $this->model->query()
                                    ->where('uuid', '=', $user->uuid)
+                                   ->orWhere('staff_code', '=', $user->staff_code)
                                    ->withTrashed()
                                    ->first();
         if (!$userModel) {
