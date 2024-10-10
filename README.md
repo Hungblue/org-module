@@ -2,7 +2,7 @@
 You can install this package via composer using this command:
 
 ```
-composer require keyhoang/org-module
+composer require thadico-platform/org-module
 ```
 Register event providers:
 
