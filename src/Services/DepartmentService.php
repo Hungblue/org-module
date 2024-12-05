@@ -72,6 +72,20 @@ class DepartmentService extends BaseService
             $departmentModel->department_head_id = $this->isMongodb ? $departmentHead?->_id : $departmentHead?->id;
         }
 
+        if ($department->unit_id) {
+            $unit                     = $this->model->query()
+                                                    ->where('uuid', '=', $department->unit?->uuid)
+                                                    ->first();
+            $departmentModel->unit_id = $this->isMongodb ? $unit?->_id : $unit?->id;
+        }
+
+        if ($department->department_id) {
+            $departmentLv1                  = $this->model->query()
+                                                          ->where('uuid', '=', $department->department?->uuid)
+                                                          ->first();
+            $departmentModel->department_id = $this->isMongodb ? $departmentLv1?->_id : $departmentLv1?->id;
+        }
+
         try {
             $departmentModel->save();
             $this->postSync($departmentModel, $isCreateNew);
