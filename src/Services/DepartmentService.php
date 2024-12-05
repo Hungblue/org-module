@@ -56,34 +56,40 @@ class DepartmentService extends BaseService
         $departmentModel->is_unit          = $department->is_unit;
         $departmentModel->is_department    = $department->is_department;
 
-        if ($department->parent) {
-            $parent = $this->model->query()
-                                  ->where('uuid', '=', $department->parent->uuid)
-                                  ->first();
+        $departmentParent = is_array($department->parent) ? (object)$department->parent : $department->parent;
+        if ($departmentParent) {
+            $parentModel = $this->model->query()
+                                       ->where('uuid', '=', $departmentParent->uuid)
+                                       ->first();
 
-            $departmentModel->parent_id = $this->isMongodb ? $parent?->_id : $parent?->id;
+            $departmentModel->parent_id = $this->isMongodb ? $parentModel?->_id : $parentModel?->id;
         }
 
-        if ($department->department_head) {
-            $departmentHead                      = $this->userModel->query()
+        $departmentHead = is_array($department->department_head) ? (object)$department->department_head
+            : $department->department_head;
+        if ($departmentHead) {
+            $departmentHeadModel                 = $this->userModel->query()
                                                                    ->where('sso_id', '=',
-                                                                           $department->department_head->sso_id)
+                                                                           $departmentHead->sso_id)
                                                                    ->first();
-            $departmentModel->department_head_id = $this->isMongodb ? $departmentHead?->_id : $departmentHead?->id;
+            $departmentModel->department_head_id = $this->isMongodb ? $departmentHeadModel?->_id
+                : $departmentHeadModel?->id;
         }
 
-        if ($department->unit_id) {
-            $unit                     = $this->model->query()
-                                                    ->where('uuid', '=', $department->unit?->uuid)
+        $departmentUnit = is_array($department->unit) ? (object)$department->unit : $department->unit;
+        if ($departmentUnit) {
+            $unitModel                = $this->model->query()
+                                                    ->where('uuid', '=', $departmentUnit?->uuid)
                                                     ->first();
-            $departmentModel->unit_id = $this->isMongodb ? $unit?->_id : $unit?->id;
+            $departmentModel->unit_id = $this->isMongodb ? $unitModel?->_id : $unitModel?->id;
         }
 
-        if ($department->department_id) {
-            $departmentLv1                  = $this->model->query()
-                                                          ->where('uuid', '=', $department->department?->uuid)
+        $departmentLv1 = is_array($department->department) ? (object)$department->department : $department->department;
+        if ($departmentLv1) {
+            $departmentLv1Model             = $this->model->query()
+                                                          ->where('uuid', '=', $departmentLv1?->uuid)
                                                           ->first();
-            $departmentModel->department_id = $this->isMongodb ? $departmentLv1?->_id : $departmentLv1?->id;
+            $departmentModel->department_id = $this->isMongodb ? $departmentLv1Model?->_id : $departmentLv1Model?->id;
         }
 
         try {
