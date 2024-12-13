@@ -12,9 +12,10 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
-    protected $table = 'users';
+    protected $table      = 'users';
+    protected $connection = 'organization-db';
     protected $fillable
-                     = [
+                          = [
             'sso_id',
             'username',
             'full_name',
@@ -28,6 +29,9 @@ class User extends Authenticatable
             'unit',
             'unit_code',
             'department',
-            'department_code'
+            'department_code',
+            'gender',
+            'department_id',
+            'unit_id',
         ];
 }
