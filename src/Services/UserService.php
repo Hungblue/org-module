@@ -58,6 +58,7 @@ class UserService extends BaseService
         $userModel->position     = $user->position;
         $userModel->avatar       = $user->avatar;
         $userModel->uuid         = $user->uuid;
+        $userModel->gender       = $user->gender;
         if ($user->user_status) {
             $userStatus        = (object)$user->user_status;
             $userModel->status = $userStatus->name;
