@@ -42,7 +42,7 @@ class UserService extends BaseService
         $userModel   = $this->model->query()
                                    ->where('uuid', '=', $user->uuid)
                                    ->orWhere('staff_code', '=', $user->staff_code)
-                                   ->withTrashed()
+                                   // ->withTrashed() //note
                                    ->first();
         if (!$userModel) {
             $userModel   = $this->isMongodb ? new UserNoSQL() : new User();
