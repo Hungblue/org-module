@@ -21,12 +21,26 @@ class UserService extends BaseService
 
     private string $mongodb   = 'mongodb';
     private bool   $isMongodb = false;
+    private Model $model;
 
-    public function __construct(private Model $model = new User(), private readonly ?string $alias = null)
+    public function __construct(private readonly ?string $alias = null)
     {
         $this->isMongodb = (config('database.default') == $this->mongodb);
-        $this->model     = $this->isMongodb ? new UserNoSQL() : new User();
+        $this->model = $this->createUserModel();
         parent::__construct($this->model, $this->alias);
+    }
+
+    /**
+     * Tạo User model instance dựa trên config
+     */
+    private function createUserModel(): Model
+    {
+        $userModelClass = (string) config('organization.user_model_class');
+        if ($userModelClass && class_exists($userModelClass)) {
+            return new $userModelClass();
+        }
+        
+        return $this->isMongodb ? new UserNoSQL() : new User();
     }
 
     public function sync($user): bool
@@ -45,7 +59,7 @@ class UserService extends BaseService
                                    // ->withTrashed() //note
                                    ->first();
         if (!$userModel) {
-            $userModel   = $this->isMongodb ? new UserNoSQL() : new User();
+            $userModel = $this->createUserModel();
             $isCreateNew = true;
         }
 
