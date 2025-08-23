@@ -105,9 +105,13 @@ class UserService extends BaseService
 
         #Set manager
         if ($this->isMongodb) {
-            $manager = $user->manager_id ?? null;
-            $managerMongoDb = UserNoSQL::query()->where('uuid', '=', $manager)->first();
-            $userModel->manager_id = $managerMongoDb?->_id ?? null;
+            $manager = is_array($user->manager) ? (object)$user->manager : $user->manager;
+            if ($manager) {
+                $managerMongoDb        = UserNoSQL::query()->where('uuid', '=', $manager->uuid)->first();
+                $userModel->manager_id = $managerMongoDb?->_id;
+            } else {
+                $userModel->manager_id = null;
+            }
         }
 
         if ($this->isMongodb && $isCreateNew) {
