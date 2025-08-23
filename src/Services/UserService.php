@@ -103,6 +103,13 @@ class UserService extends BaseService
             $userModel->unit_abbreviated_name = $unit->abbreviated_name ?? null;
         }
 
+        #Set manager
+        if ($this->isMongodb) {
+            $manager = $user->manager_id ?? null;
+            $managerMongoDb = UserNoSQL::query()->where('uuid', '=', $manager)->first();
+            $userModel->manager_id = $managerMongoDb?->_id ?? null;
+        }
+
         if ($this->isMongodb && $isCreateNew) {
             $userModel->is_active = true;
         }
